@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Oct 20 15:25:01 2022
+
+@author: jrbra
+"""
+
 from math import sin, cos, radians
 
 from types import SimpleNamespace
