@@ -35,7 +35,9 @@ void main()
 class Mesh:
     def __init__(self, mesh):
         self.vertices, self.indices = np.unique([face for face in mesh.faces], return_inverse=True, axis=0)
+        self.normals = np.zeros([self.vertices.shape(), 3])
         
+    def bind(self):
         # Allocate and assign Vertex Array Object
         VAO = glGenVertexArrays(1)
         # Set VAO as current bound vertex array object
