@@ -18,3 +18,20 @@ def get_or_load_model(filename: str):
         
     ModelCache[filename] = model
     return model
+
+TextureCache = {}
+
+def get_or_load_texture(filename: str):
+    logging.info(f"Attempting to load {filename}")
+    
+    if filename in TextureCache.keys():
+        return TextureCache[filename]
+    
+    path = os.path.join(os.path.dirname(__file__), filename)
+    
+    mat = pywavefront.Material(path)
+    if not mat:
+        logging.error(f"Failed to load {filename}")
+        
+    TextureCache[filename] = mat
+    return mat
