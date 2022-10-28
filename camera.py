@@ -17,7 +17,6 @@ class Camera(GameObject):
         self.sensitivity = sensitivity
         self.transform.position = position
         
-        
         self.movement_speed = 500
         
         self.update_vectors()

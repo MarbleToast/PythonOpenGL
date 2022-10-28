@@ -1,5 +1,7 @@
 import pygame
 import sys
+from scene import Scene
+from shaders import Shaders
 from model import Model
 from camera import Camera
 from event import EventHandler, handle_events, add_tick_listener
@@ -23,14 +25,16 @@ class Application:
 
         clock = pygame.time.Clock()
         
-        rabbit = Model("assets/models/bunny_world.obj")
-        
-        camera = Camera(self.window_size[0], self.window_size[1])
-        add_tick_listener(camera)
+        scene = Scene(Shaders())
+        scene.add_model("assets/models/bunny_world.obj")
+        scene.create_camera(self.window_size[0], self.window_size[1])
         
         while not self.shouldClose:
             glClearColor(0.7, 0.1, 0.3, 1.0)
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             handle_events(clock.tick(TARGET_FRAMERATE))
+            
+            scene.render()
+            
             pygame.display.flip()
             
