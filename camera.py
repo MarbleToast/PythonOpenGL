@@ -1,14 +1,16 @@
 import numpy as np
 import pygame
+import logging
 from math import tan, radians
-from gameobject import GameObject, DEFAULT_POSITION
+from gameobject import GameObject
+from transform import DEFAULT_POSITION, Transform
 
 Z_NEAR = 0.1
 Z_FAR = 1000
 
 class Camera(GameObject):
     def __init__(self, viewport_width, viewport_height, position = DEFAULT_POSITION, field_of_view = 90., sensitivity = 1):
-        super().__init__("Camera")
+        super().__init__("Camera", None, Transform(position))
         
         self.viewport_width = viewport_width
         self.viewport_height = viewport_height
@@ -20,6 +22,7 @@ class Camera(GameObject):
         self.movement_speed = 500
         
         self.update_vectors()
+        self.generate_frustrum()
         
     def generate_frustrum(self):
         f = tan(radians(self.field_of_view)/2)
@@ -46,7 +49,9 @@ class Camera(GameObject):
         if keys[pygame.K_s]:
             self.transform.position -= self.front * velocity
             
-        super().update(event)
+        super().update(event, dt)
             
     def get_view(self):
-        pass
+        V = np.identity(4)
+        V[2,3] = -5.0
+        return V

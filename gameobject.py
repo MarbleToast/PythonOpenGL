@@ -4,33 +4,24 @@ Created on Thu Oct 20 15:25:01 2022
 
 @author: jrbra
 """
-
+from model import Model
 from math import sin, cos, radians
-
-from types import SimpleNamespace
-from pygame.math import Vector3, Vector2
-
-GLOBAL_UP = Vector3(0., 1., 0.)
-DEFAULT_POSITION = Vector3(0., 0., 0.)
-DEFAULT_ROTATION = Vector2(-90., 0.)
-DEFAULT_SCALE = Vector3(1., 1., 1.)
-
-Transform = SimpleNamespace(
-    position = DEFAULT_POSITION,
-    rotation = DEFAULT_ROTATION,
-    scale = DEFAULT_SCALE
-)
+from transform import Transform, GLOBAL_UP
+from pygame.math import Vector3
 
 class GameObject:
-    def __init__(self, name: str, transform: Transform = Transform, model = None):
+    def __init__(self, name: str, scene, transform = Transform(), model_filename = None):
         self.name = name
         self.transform = transform
-        self.model = model
+        self.scene = scene
         self.front = Vector3(0., 0., -1.)
         self.parent = None
         self.update_vectors()
-        
-    def update(self, event):
+        if model_filename is not None:
+            self.model = Model(model_filename, self)
+            
+    def update(self, event, dt):
+        print(self.transform, self.name)
         self.update_vectors()
         
     def update_vectors(self):

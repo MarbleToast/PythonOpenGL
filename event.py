@@ -16,8 +16,6 @@ def handle_events(dt):
         handler = HandlerRegistry.get(event.type)
         if handler:
             handler(event, dt)
-        else:
-            print(f"No handler for {event}")
 
 TickEvent = pygame.event.Event(pygame.USEREVENT + 1)
 TickListenerRegistry = WeakKeyDictionary()

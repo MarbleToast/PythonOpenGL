@@ -1,4 +1,3 @@
-from sys import getsizeof
 import numpy as np
 from OpenGL.GL import (
     glBufferData,
@@ -33,9 +32,9 @@ class Mesh:
         attr_value = list(self.VBOs.keys()).index(name)
         print(attr_value)
         
-        shaders = self.model.scene.default_shaders.program
+        shaders = self.model.parent_object.scene.default_shaders.program
         if self.model.custom_shaders:
-            shaders = self.model.custom_shaders
+            shaders = self.model.custom_shaders.program
         
         glBindAttribLocation(shaders, attr_value, name)
             
@@ -53,9 +52,7 @@ class Mesh:
         # Set VAO as current bound vertex array object
         glBindVertexArray(self.VAO)
         
-        self.bind_VBO('position', self.vertices)
-        self.bind_VBO('normal', self.normals)
-        self.bind_VBO('colour', self.colours)
+        self.bind_VBO('aPos', self.vertices)
         
         # Allocate and assign Element Buffer Object
         EBO = glGenBuffers(1)
@@ -65,7 +62,7 @@ class Mesh:
         glBindVertexArray(0)
         glBindBuffer(GL_ARRAY_BUFFER, 0)
         
-    def draw(self):
+    def draw(self):            
         glBindVertexArray(self.VAO)
         glDrawElements(GL_TRIANGLES, len(self.indices), GL_UNSIGNED_INT, None)
         glBindVertexArray(0)

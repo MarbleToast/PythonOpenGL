@@ -10,7 +10,6 @@ def pre_init():
 def main():
     pre_init()
     display.init_display(640, 480)
-    
     app = Application(640, 480)
     app.run()
         
