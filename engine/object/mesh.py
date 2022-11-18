@@ -30,11 +30,13 @@ from OpenGL.error import NullFunctionError
 
 class Mesh:
     def __init__(self, data, material):
-        self.indices = np.array(self.getIndices(data['faces']), dtype=np.uint32)
+        self.indices = np.array(self.get_indices(data['faces']), dtype=np.uint32)
         self.vertices = np.array(data['vertices'], dtype=np.float32)
         self.normals = np.array(data['normals'], dtype=np.float32)
-        self.texCoords = np.array(data['texturecoords'], dtype=np.float32)
-        self.tangents = np.array(data['tangents'], dtype=np.float32)
+    
+        self.texCoords = np.array(data['texturecoords'], dtype=np.float32) if "texturecoords" in data else np.array([])
+        self.tangents = np.array(data['tangents'], dtype=np.float32) if "tangents" in data else np.array([])
+        
         self.positions = np.array([[0, 0, 0]], dtype=np.float32)
         
         self.material = material
@@ -79,12 +81,12 @@ class Mesh:
         glEnableVertexAttribArray(location)
         glVertexAttribDivisor(location, 0 if dynamic == False else 1)
 
-    def getIndices(self, assimpIndices):
-        indicesList = []
-        for face in assimpIndices:
+    def get_indices(self, faces):
+        indices = []
+        for face in faces:
             for indice in face:
-                indicesList.append(indice)
-        return indicesList
+                indices.append(indice)
+        return indices
 
     def set_positions(self, positions):
         self.positions = np.array(positions, dtype=np.float32)
@@ -115,6 +117,7 @@ class Mesh:
             self.material.depth.bind()
         
         glBindVertexArray(self.VAO)
+        print(self.positions)
         if len(self.positions) > 1:
             glDrawElementsInstanced(GL_TRIANGLES, len(self.indices), GL_UNSIGNED_INT, None, len(self.positions))
         else:

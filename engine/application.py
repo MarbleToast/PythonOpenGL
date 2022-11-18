@@ -1,5 +1,8 @@
 import glfw
 import glm
+import logging
+import random
+import numpy as np
 from OpenGL.GL import *
 from engine.core.program import ShaderProgram
 from engine.object.model import Model
@@ -27,6 +30,7 @@ class Application:
         glfw.set_framebuffer_size_callback(self.window, self.resize_callback)
         glfw.set_cursor_pos_callback(self.window, self.mouse_callback)
         glfw.set_key_callback(self.window, self.key_callback)
+        glfw.set_window_refresh_callback(self.window, self.window_refresh_callback)
         
     def generate_perspective(self):
         self.perspective = glm.perspective(45, self.width/self.height, config['near_plane'], config['far_plane'])
@@ -53,15 +57,27 @@ class Application:
     def key_callback(self, window, key, scancode, action, mods):
         if key == glfw.KEY_ESCAPE and action == glfw.PRESS:
             glfw.set_window_should_close(window, True)
+            
+    def window_refresh_callback(self, window):
+        logging.warning("Window refreshing!")
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        glfw.swap_buffers(self.window)
         
     def run(self):
-        program = ShaderProgram('resources/shaders/vert.vs', 'resources/shaders/frag.fs')
+        program = ShaderProgram('resources/shaders/vertex.vs', 'resources/shaders/fragment.fs')
         
-        self.scene = Scene("", self.perspective)
+        self.scene = Scene("Main", self.perspective)
 
         cube = Model('resources/models/cube.json')
-        cube.set_positions([glm.vec3(0, 0, 0), glm.vec3(1, 1, 1)])
+        cubeLight = Model('resources/models/cube.json')
+        positions = []
+        for i in range(1, 100):
+            for j in range(1, 100):
+                positions.append(glm.vec3(i+3, 3, j+3))
+                
+        cube.set_positions(positions)
         self.scene.add_object(cube)
+        self.scene.add_object(cubeLight)
 
         lastTime = glfw.get_time()
         while not glfw.window_should_close(self.window):
@@ -71,6 +87,7 @@ class Application:
             lastTime = currentTime
             
             self.scene.update(self.window, deltaTime)
+            cubeLight.set_positions(self.scene.light_position)
             self.scene.draw(program)
 
             glfw.poll_events()

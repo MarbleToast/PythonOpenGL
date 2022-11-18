@@ -4,7 +4,7 @@ save_data_on_exit = True
 save_history = True
 save_non_project_files = False
 project_type = 'empty-project-type'
-recent_files = ['main.py', 'app.py', 'camera.py', 'resource_cache.py', 'mesh.py', 'shaders.py', 'model.py', 'keyboard.py', 'scene.py', 'test.py', 'gameobject.py', 'transform.py', 'helpers.py', 'mouse.py']
+recent_files = ['engine\\object\\model.py', 'engine\\object\\mesh.py', 'resources\\shaders\\vertex.vs', 'resources\\shaders\\fragment.fs', 'engine\\application.py', 'engine\\texture\\material.py', 'engine\\scene.py', 'main.py', 'engine\\object\\sceneobject.py']
 
 [main]
 version = 0.2.0

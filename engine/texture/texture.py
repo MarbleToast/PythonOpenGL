@@ -28,7 +28,7 @@ class Texture:
         
     def load(self):
         self.bind()
-        image = Image.open(self.path)
+        image = Image.open(f"resources/textures/{self.path}")
         image = image.transpose(Image.FLIP_TOP_BOTTOM)
         image_bytes = image.convert('RGBA').tobytes()
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_bytes)
