@@ -1,4 +1,5 @@
 import numpy as np
+import glm
 from OpenGL.GL import (
     GL_ARRAY_BUFFER,
     GL_ELEMENT_ARRAY_BUFFER,
@@ -29,17 +30,19 @@ from OpenGL.GL import (
 from OpenGL.error import NullFunctionError
 
 class Mesh:
-    def __init__(self, data, material):
+    def __init__(self, parent, data, material):
         self.indices = np.array(self.get_indices(data['faces']), dtype=np.uint32)
         self.vertices = np.array(data['vertices'], dtype=np.float32)
         self.normals = np.array(data['normals'], dtype=np.float32)
-    
         self.texCoords = np.array(data['texturecoords'], dtype=np.float32) if "texturecoords" in data else np.array([])
         self.tangents = np.array(data['tangents'], dtype=np.float32) if "tangents" in data else np.array([])
+        self.bitangents = np.array(data['bitangents'], dtype=np.float32) if "bitangents" in data else np.array([])
         
-        self.positions = np.array([[0, 0, 0]], dtype=np.float32)
+        self.transforms = np.array([])
         
         self.material = material
+        
+        self.parent = parent
         
         self.VAO = 0
         self.VBOs = {}
@@ -58,7 +61,7 @@ class Mesh:
         self.bindVBO("aNormal", self.normals, 3)
         self.bindVBO("aTexCoords", self.texCoords, 2)
         self.bindVBO("aTangent", self.tangents, 3)
-        self.bindVBO("aInstancePos", self.positions, 3, dynamic=True)
+        self.bindVBO("aBitangent", self.bitangents, 3)
         
         glBindBuffer(GL_ARRAY_BUFFER, 0)
         glBindVertexArray(0)
@@ -88,14 +91,9 @@ class Mesh:
                 indices.append(indice)
         return indices
 
-    def set_positions(self, positions):
-        self.positions = np.array(positions, dtype=np.float32)
-        
-        glBindVertexArray(self.VAO)
-        glBindBuffer(GL_ARRAY_BUFFER, self.VBOs["aInstancePos"])
-        glBufferData(GL_ARRAY_BUFFER, self.positions, GL_DYNAMIC_DRAW)
-        glBindVertexArray(0)
-
+    def set_transforms(self, transforms):
+        self.transforms = np.array(transforms)
+    
     def draw(self, program):
         glActiveTexture(GL_TEXTURE1)
         program.setInt('mat.diffuseMap', 1)
@@ -115,12 +113,19 @@ class Mesh:
             glActiveTexture(GL_TEXTURE4)
             program.setInt('mat.depthMap', 4)
             self.material.depth.bind()
+            
+        program.setFloat('mat.shininess', self.material.shininess)
+        program.setFloat('mat.heightScale', self.material.height_scale)
         
         glBindVertexArray(self.VAO)
-        print(self.positions)
-        if len(self.positions) > 1:
-            glDrawElementsInstanced(GL_TRIANGLES, len(self.indices), GL_UNSIGNED_INT, None, len(self.positions))
-        else:
+        
+        for trf in self.transforms:
+            model = glm.mat4()
+            model = glm.translate(model, trf["position"]);
+            model = glm.rotate(model, trf["rotation"].x, self.parent.up)
+            model = glm.rotate(model, trf["rotation"].y, self.parent.right)
+            model = glm.scale(model, trf["scale"])
+            program.setMat4('model', model)
             glDrawElements(GL_TRIANGLES, len(self.indices), GL_UNSIGNED_INT, None)
             
         glActiveTexture(GL_TEXTURE0)

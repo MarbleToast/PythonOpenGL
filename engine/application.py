@@ -68,17 +68,6 @@ class Application:
         
         self.scene = Scene("Main", self.perspective)
 
-        cube = Model('resources/models/cube.json')
-        cubeLight = Model('resources/models/cube.json')
-        positions = []
-        for i in range(1, 100):
-            for j in range(1, 100):
-                positions.append(glm.vec3(i+3, 3, j+3))
-                
-        cube.set_positions(positions)
-        self.scene.add_object(cube)
-        self.scene.add_object(cubeLight)
-
         lastTime = glfw.get_time()
         while not glfw.window_should_close(self.window):
 
@@ -87,7 +76,7 @@ class Application:
             lastTime = currentTime
             
             self.scene.update(self.window, deltaTime)
-            cubeLight.set_positions(self.scene.light_position)
+            
             self.scene.draw(program)
 
             glfw.poll_events()

@@ -2,32 +2,34 @@ import glm
 import math
 from OpenGL.GL import *
 from engine.object.camera import Camera
-
+from engine.object.model import Model
 
 
 class Scene:
     def __init__(self, path, perspective):
         self.path = path
-        self.camera = Camera()
-        self.objects = []
-        self.light_position = glm.vec3(50, 1, 50)
-        self.light_move_speed = 0.1
+        self.camera = Camera(position=glm.vec3(0, 10, 0))
         self.perspective = perspective
-        self.light_step = 0
+        self.objects = []
         
-    def load_from_file(self):
-        pass
+        self.setup()
+        
+    def setup(self):
+        cube = Model('resources/models/cube.json')
+        
+        positions = []
+        for i in range(-3, 3):
+            for j in range(-3, 3):
+                positions.append(glm.vec3(i*3, 0, j*3))
+                
+        cube.set_transforms([{"position": pos, "rotation": glm.vec3(), "scale": glm.vec3(3, 0.5, 3)} for pos in positions])
+        self.add_object(cube)
         
     def add_object(self, object):
         self.objects.append(object)
         
     def update(self, window, dt):
         self.camera.update(window, dt)
-        #self.light_position.x += (100 * math.cos((self.light_step*math.pi)/360) 
-        #                          * dt)
-        #self.light_position.z += (100 * math.sin((self.light_step*math.pi)/360)
-        #                          * dt)
-        #self.light_step += 1
         
     def draw(self, program):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -36,10 +38,8 @@ class Scene:
         program.use()
         program.setMat4('viewProject', self.perspective * self.camera.get_view())
         program.setVec3('viewPos', self.camera.position)
-        program.setVec3('lightPos', self.light_position)
-        
-        program.setFloat('mat.shininess', 128)
-        program.setFloat('mat.heightScale', 0.12)
+        program.setVec3('light.direction', glm.vec3(-0.2, -1.0, -0.3))
+
         for obj in self.objects:
             obj.draw(program)
         
