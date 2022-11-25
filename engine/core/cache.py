@@ -1,7 +1,8 @@
 # import numpy as np
 from engine.texture.texture import Texture
-# from engine.texture.material import Material
 from OpenGL.GL import GL_TEXTURE_2D
+import os
+
 
 # Textures can and should be reused between materials
 

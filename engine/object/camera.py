@@ -4,7 +4,7 @@ from engine.constants import WORLD_UP
 from engine.object.sceneobject import SceneObject
 
 class Camera(SceneObject):
-    def __init__(self, position = None, speed = 10):
+    def __init__(self, position = None, speed = 3):
         super().__init__("Camera", None, position)
         self.speed = speed
         self.sensitivity = 0.25

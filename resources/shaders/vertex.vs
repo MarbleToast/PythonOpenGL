@@ -16,6 +16,7 @@ out VS_OUT {
 uniform mat4 viewProject;
 uniform mat4 model;
 uniform vec3 viewPos;
+uniform mat4 lightSpaceMatrix;
 
 void main() {
     vs_out.texCoords = aTexCoords;

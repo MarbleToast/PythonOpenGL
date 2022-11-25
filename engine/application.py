@@ -18,7 +18,6 @@ class Application:
         self.mouse_touched = False
         self.last_mouse_x, self.last_mouse_y = 0, 0
         
-        glEnable(GL_DEPTH_TEST)
         glEnable(GL_MULTISAMPLE)
         glEnable(GL_CULL_FACE)
         glCullFace(GL_BACK)

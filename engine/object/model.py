@@ -5,8 +5,33 @@ from engine.object.sceneobject import SceneObject
 from engine.texture.material import Material
 # from engine.core.cache import get_or_load_materials
 
+def get_property_from_material(key, material):
+    return next((p for p in material["properties"] if p["key"] == key), None)
+
 class Model(SceneObject):
-    def __init__(self, path, position = None, rotation = None, scale = None):
+    def __init__(self, path, position = None, rotation = None, scale = None, texture_set = "default"):
+        """
+        
+
+        Parameters
+        ----------
+        path : str
+            DESCRIPTION.
+        position : glm.vec3, optional
+            DESCRIPTION. The default is None.
+        rotation : glm.vec3, optional
+            DESCRIPTION. The default is None.
+        scale : glm.vec3, optional
+            DESCRIPTION. The default is None.
+        textures : dict["name", "diffuse", "normal", "specular", "depth"], optional
+            DESCRIPTION. The default is None.
+
+        Raises
+        ------
+        RuntimeError
+            DESCRIPTION.
+
+        """
         if not os.path.exists(path):
             raise RuntimeError(f'Model source file {path} does not exists.')
             
@@ -15,13 +40,9 @@ class Model(SceneObject):
         self.meshes = []
 
         data = self.load_data(path)
-        for meshData in data['meshes']:
-            newmat = Material("main_mat",
-                              "depth.jpg",
-                              "normal.jpg",
-                              "specular.jpg",
-                              "depth.jpg")
-            self.meshes.append(Mesh(self, meshData, newmat))
+        for mesh_data in data['meshes']:
+            mesh_mat = Material(texture_set)
+            self.meshes.append(Mesh(self, mesh_data, mesh_mat))
         
         
     def load_data(self, path):

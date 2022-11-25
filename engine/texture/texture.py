@@ -23,14 +23,14 @@ class Texture:
     def __init__(self, path, type):
         self.path = path
         self.type = type
-        self.texture = glGenTextures(1)
         self.load()
         
     def load(self):
-        self.bind()
         image = Image.open(f"resources/textures/{self.path}")
         image = image.transpose(Image.FLIP_TOP_BOTTOM)
         image_bytes = image.convert('RGBA').tobytes()
+        self.texture = glGenTextures(1)
+        self.bind()
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_bytes)
 
         glGenerateMipmap(GL_TEXTURE_2D)

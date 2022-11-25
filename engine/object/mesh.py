@@ -26,6 +26,8 @@ from OpenGL.GL import (
     glVertexAttribDivisor,
     glDrawElements,
     glActiveTexture,
+    glGetIntegerv,
+    GL_TEXTURE_BINDING_2D
 )
 from OpenGL.error import NullFunctionError
 
@@ -129,6 +131,14 @@ class Mesh:
             glDrawElements(GL_TRIANGLES, len(self.indices), GL_UNSIGNED_INT, None)
             
         glActiveTexture(GL_TEXTURE0)
+        if self.material.normal:
+            self.material.normal.unbind()
+            
+        if self.material.specular:
+            self.material.specular.unbind()
+            
+        if self.material.depth:
+            self.material.depth.unbind()
 
     def __del__(self):
         try:
