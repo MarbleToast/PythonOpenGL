@@ -7,5 +7,5 @@ class Material:
         self.normal = get_or_load_texture(normal_path) if normal_path else None
         self.specular = get_or_load_texture(specular_path) if specular_path else None
         self.depth = get_or_load_texture(displacement_path) if displacement_path else None
-        self.shininess = 0.5
-        self.height_scale = 0.1
+        self.shininess = 64
+        self.height_scale = 0.12

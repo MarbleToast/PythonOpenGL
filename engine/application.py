@@ -21,6 +21,8 @@ class Application:
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_MULTISAMPLE)
         glEnable(GL_CULL_FACE)
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         glCullFace(GL_BACK)
         
         glViewport(0, 0, self.width, self.height)
@@ -64,7 +66,8 @@ class Application:
         glfw.swap_buffers(self.window)
         
     def run(self):
-        program = ShaderProgram('resources/shaders/vertex.vs', 'resources/shaders/fragment.fs')
+        main_program = ShaderProgram('resources/shaders/vertex.vs', 'resources/shaders/fragment.fs')
+        depth_program = ShaderProgram('resources/shaders/depth_vertex.vs', 'resources/shaders/depth_fragment.fs')
         
         self.scene = Scene("Main", self.perspective)
 
@@ -76,8 +79,7 @@ class Application:
             lastTime = currentTime
             
             self.scene.update(self.window, deltaTime)
-            
-            self.scene.draw(program)
+            self.scene.draw(main_program, depth_program)
 
             glfw.poll_events()
             glfw.swap_buffers(self.window)

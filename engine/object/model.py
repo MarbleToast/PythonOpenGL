@@ -16,12 +16,20 @@ class Model(SceneObject):
 
         data = self.load_data(path)
         for meshData in data['meshes']:
-            newmat = Material("main_mat",
-                              "depth.jpg",
-                              "normal.jpg",
-                              "specular.jpg",
-                              "depth.jpg")
-            self.meshes.append(Mesh(self, meshData, newmat))
+            if path == "resources/models/ball.json":
+                newmat = Material("y",
+                                  "cube.jpg",
+                                  "cube.jpg",
+                                  "cube.jpg",
+                                  "cube.jpg")
+                self.meshes.append(Mesh(self, meshData, newmat))
+            else:
+                newmat = Material("main_mat",
+                                  "diffuse.jpg",
+                                  "normal.jpg",
+                                  "specular.jpg",
+                                  "depth.jpg")
+                self.meshes.append(Mesh(self, meshData, newmat))
         
         
     def load_data(self, path):

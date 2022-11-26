@@ -9,7 +9,7 @@ TEXTURE_CACHE = {}
 
 def get_or_load_texture(path: str):
     if not path in TEXTURE_CACHE.keys():
-        TEXTURE_CACHE[path] = Texture(path, GL_TEXTURE_2D)
+        TEXTURE_CACHE[path] = Texture(GL_TEXTURE_2D, path)
     
     return TEXTURE_CACHE[path]
 
