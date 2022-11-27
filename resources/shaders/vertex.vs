@@ -13,17 +13,25 @@ out VS_OUT {
     vec3 tangentFragPosition;
     vec4 fragPosLightSpace;
     vec3 normal;
+    vec3 tangentGlobalLightPosition;
 } vs_out;
+
+struct GlobalLight {
+    vec3 position;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
 
 uniform mat4 viewProject;
 uniform mat4 model;
 uniform vec3 viewPos;
 uniform mat4 lightSpaceMatrix;
+uniform GlobalLight globalLight;
 
 void main() {
     vs_out.texCoords = aTexCoords;
     vs_out.fragPosition = vec3(model * vec4(aPos, 1.0));
-    
     vs_out.normal = transpose(inverse(mat3(model))) * aNormal;
     
     vec3 T = normalize(vec3(model * vec4(aTangent, 0.0)));
@@ -33,6 +41,7 @@ void main() {
     
     vs_out.tangentViewPosition = TBN * viewPos;
     vs_out.tangentFragPosition = TBN * vs_out.fragPosition;
+    vs_out.tangentGlobalLightPosition = TBN * globalLight.position;
     vs_out.fragPosLightSpace = lightSpaceMatrix * vec4(vs_out.fragPosition, 1.0);
     
     gl_Position = viewProject * vec4(vs_out.fragPosition, 1.0);

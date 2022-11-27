@@ -14,14 +14,13 @@ class Scene:
         self.camera = Camera(position=glm.vec3(0, 10, 0))
         self.perspective = perspective
         self.objects = []
-        self.light_direction = glm.vec3(0, 1, 0)
-        self.ticks = 0
+        self.global_light_position = glm.vec3(50, -10, 10)
         
         self.point_light_positions = [
-            glm.vec3(-20, 2, -10),
+            self.global_light_position,
         ]
         
-        self.shadows = ShadowsEffect(self.point_light_positions[0], config['near_plane'], config['far_plane'])
+        self.shadows = ShadowsEffect(self.global_light_position, config['near_plane'], config['far_plane'])
         
         self.setup()
         
@@ -32,7 +31,7 @@ class Scene:
        positions = []
        for i in range(-10, 10):
            for j in range(-10, 10):
-               positions.append(glm.vec3(i*3, random.gauss(-2, 1), j*3))
+               positions.append(glm.vec3(i*3, 1-(i+10/30), j*3))
                
        cube.set_transforms([{"position": pos, "rotation": glm.vec3(), "scale": glm.vec3(3, 5, 3)} for pos in positions])
        ball.set_transforms([{"position": pos, "rotation": glm.vec3(), "scale": glm.vec3(1)} for pos in self.point_light_positions])
@@ -45,12 +44,13 @@ class Scene:
         self.objects.append(object)
         
     def update(self, window, dt):
-        self.ticks += 0.1
-        self.point_light_positions = [glm.vec3(10 * math.sin(self.ticks)*dt, 2, 10), glm.vec3(10, 2, 10 * math.sin(self.ticks)*dt)]
-        self.point_light_positions[0].z = math.sin(glfw.get_time()*0.1) * 2
-        self.objects[1].set_transforms([{"position": pos, "rotation": glm.vec3(), "scale": glm.vec3(1)} for pos in self.point_light_positions])
+        self.global_light_position.y += 20 * math.sin(glfw.get_time()) * (dt**2)
+        self.point_light_positions[0].y += math.sin(glfw.get_time())
+        self.objects[1].set_transforms([{
+            "position": pos, "rotation": glm.vec3(), "scale": glm.vec3(1)
+        } for pos in self.point_light_positions])
         
-        self.shadows.update_light_space_matrix(self.point_light_positions[0], config['near_plane'], config['far_plane'])
+        self.shadows.update_light_space_matrix(self.global_light_position, config['near_plane'], config['far_plane'])
         self.camera.update(window, dt)
         
     def draw(self, main_program, depth_program):
@@ -70,10 +70,10 @@ class Scene:
         main_program.setMat4('viewProject', self.perspective * self.camera.get_view())
         main_program.setVec3('viewPos', self.camera.position)
         
-        main_program.setVec3('directionalLight.direction', self.light_direction)
-        main_program.setVec3("directionalLight.ambient", glm.vec3(0.1, 0.345, 0.133))
-        main_program.setVec3("directionalLight.diffuse", glm.vec3(0.35))
-        main_program.setVec3("directionalLight.specular", glm.vec3(0.5))
+        main_program.setVec3('globalLight.position', self.global_light_position)
+        main_program.setVec3("globalLight.ambient", glm.vec3(0.08, 0.05, 0.05))
+        main_program.setVec3("globalLight.diffuse", glm.vec3(0.886, 0.345, 0.133))
+        main_program.setVec3("globalLight.specular", glm.vec3(1))
         
         main_program.setVec3("pointLights[0].position", self.point_light_positions[0])
         main_program.setVec3("pointLights[0].ambient", glm.vec3(0.886, 0.345, 0.133))
@@ -83,13 +83,13 @@ class Scene:
         main_program.setFloat("pointLights[0].linear", 0.09)
         main_program.setFloat("pointLights[0].quadratic", 0.032)
         
-        main_program.setVec3("pointLights[1].position", self.point_light_positions[1])
-        main_program.setVec3("pointLights[1].ambient", glm.vec3(0.886, 0.345, 0.133))
-        main_program.setVec3("pointLights[1].diffuse", glm.vec3(0.886, 0.345, 0.133))
-        main_program.setVec3("pointLights[1].specular", glm.vec3(1))
-        main_program.setFloat("pointLights[1].constant", 1)
-        main_program.setFloat("pointLights[1].linear", 0.09)
-        main_program.setFloat("pointLights[1].quadratic", 0.032)
+        # main_program.setVec3("pointLights[1].position", self.point_light_positions[1])
+        # main_program.setVec3("pointLights[1].ambient", glm.vec3(0.886, 0.345, 0.133))
+        # main_program.setVec3("pointLights[1].diffuse", glm.vec3(0.886, 0.345, 0.133))
+        # main_program.setVec3("pointLights[1].specular", glm.vec3(1))
+        # main_program.setFloat("pointLights[1].constant", 1)
+        # main_program.setFloat("pointLights[1].linear", 0.09)
+        # main_program.setFloat("pointLights[1].quadratic", 0.032)
 
         for obj in self.objects:
             obj.draw(main_program)

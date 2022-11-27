@@ -34,6 +34,7 @@ class ShadowsEffect:
         glDisable(GL_CULL_FACE)
         
         program.use()
+        print(self.light_space_matrix)
         program.setMat4('lightSpaceMatrix', self.light_space_matrix)
         glViewport(0, 0, self.width, self.height)
         self.frame_buffer.bind()
