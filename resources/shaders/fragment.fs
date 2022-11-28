@@ -41,7 +41,7 @@ struct GlobalLight {
 uniform GlobalLight globalLight;
 
 uniform Material mat;
-#define NUM_LIGHT_POINTS 1
+#define NUM_LIGHT_POINTS 2
 uniform PointLight pointLights[NUM_LIGHT_POINTS];
 uniform sampler2D shadowMap;
 

@@ -2,10 +2,12 @@ import glm
 import glfw
 from engine.constants import WORLD_UP
 from engine.object.sceneobject import SceneObject
+from engine.config import CONFIG
 
 class Camera(SceneObject):
-    def __init__(self, position = None, speed = 10):
+    def __init__(self, fov = 45, position = None, speed = 10):
         super().__init__("Camera", None, position)
+        self.fov = fov
         self.speed = speed
         self.sensitivity = 0.25
         
@@ -31,6 +33,9 @@ class Camera(SceneObject):
         elif self.rotation.y < -89:
             self.rotation.y = -89
         self.update_vectors()
+        
+    def get_perspective(self, width, height):
+        return glm.perspective(self.fov, width/height, CONFIG["near_plane"], CONFIG["far_plane"])
 
     def get_view(self):
         return glm.lookAt(self.position, self.position + self.front, self.up)

@@ -1,32 +1,6 @@
 import numpy as np
 import glm
-from OpenGL.GL import (
-    GL_ARRAY_BUFFER,
-    GL_ELEMENT_ARRAY_BUFFER,
-    GL_STATIC_DRAW,
-    GL_DYNAMIC_DRAW,
-    GL_FLOAT,
-    GL_UNSIGNED_INT,
-    GL_TRIANGLES,
-    GL_TEXTURE0,
-    GL_TEXTURE1,
-    GL_TEXTURE2,
-    GL_TEXTURE3,
-    GL_TEXTURE4,
-    glBufferData,
-    glGenVertexArrays,
-    glGenBuffers,
-    glBindBuffer,
-    glBindVertexArray,
-    glVertexAttribPointer,
-    glEnableVertexAttribArray,
-    glDrawElementsInstanced,
-    glDeleteVertexArrays,
-    glDeleteBuffers,
-    glVertexAttribDivisor,
-    glDrawElements,
-    glActiveTexture,
-)
+from OpenGL.GL import *
 from OpenGL.error import NullFunctionError
 
 class Mesh:
@@ -128,7 +102,6 @@ class Mesh:
             program.setMat4('model', model)
             glDrawElements(GL_TRIANGLES, len(self.indices), GL_UNSIGNED_INT, None)
             
-        glActiveTexture(GL_TEXTURE0)
 
     def __del__(self):
         try:

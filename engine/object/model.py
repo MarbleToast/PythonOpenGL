@@ -6,23 +6,18 @@ from engine.texture.material import Material
 # from engine.core.cache import get_or_load_materials
 
 class Model(SceneObject):
-    def __init__(self, path, position = None, rotation = None, scale = None):
+    def __init__(self, path, material = None):
         if not os.path.exists(path):
             raise RuntimeError(f'Model source file {path} does not exists.')
             
-        super().__init__(path, None, position, rotation, scale)   
+        super().__init__(path, None)   
         
         self.meshes = []
 
         data = self.load_data(path)
         for meshData in data['meshes']:
-            if path == "resources/models/ball.json":
-                newmat = Material("y",
-                                  "cube.jpg",
-                                  "cube.jpg",
-                                  "cube.jpg",
-                                  "cube.jpg")
-                self.meshes.append(Mesh(self, meshData, newmat))
+            if material:
+                self.meshes.append(Mesh(self, meshData, material))
             else:
                 newmat = Material("main_mat",
                                   "diffuse.jpg",
@@ -41,12 +36,8 @@ class Model(SceneObject):
     def set_transforms(self, transforms):
         for mesh in self.meshes:
             mesh.set_transforms(transforms)
-            
-    def get_transforms(self):
-        return self.meshes[0].transforms
 
     def draw(self, program):
-        program.use()
         for mesh in self.meshes:
             mesh.draw(program)
 

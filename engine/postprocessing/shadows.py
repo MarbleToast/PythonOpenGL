@@ -2,19 +2,18 @@ import glm
 from OpenGL.GL import *
 from engine.texture.framebuffer import FrameBuffer
 from engine.texture.depthbuffer import DepthBuffer
+from engine.config import CONFIG
 
 class ShadowsEffect:
-    def __init__(self, light_position, z_near, z_far):
-        self.update_light_space_matrix(light_position, z_near, z_far)
+    def __init__(self, light_position):
+        self.update_light_space_matrix(light_position)
     
-    def update_light_space_matrix(self, light_position, z_near, z_far):
-        projection = glm.ortho(-10, 10, -10, 10, z_near, z_far)
+    def update_light_space_matrix(self, light_position):
+        projection = glm.perspective(45, CONFIG["shadow_width"]/CONFIG["shadow_height"], CONFIG["near_plane"], CONFIG["far_plane"])
         view = glm.lookAt(light_position, glm.vec3(0), glm.vec3(0, 1, 0))
         self.light_space_matrix = projection * view
 
-    def create(self, width, height):
-        self.width = width
-        self.height = height
+    def create(self):
         self.depth_buffer = DepthBuffer()
         self.frame_buffer = FrameBuffer()
         
@@ -22,7 +21,7 @@ class ShadowsEffect:
         self.frame_buffer.bind()
         
         # Create depth buffer texture
-        self.depth_buffer.generate(width, height)
+        self.depth_buffer.generate(CONFIG["shadow_width"], CONFIG["shadow_height"])
         
         # Attach depth buffer texture to framebuffer
         self.depth_buffer.attach()
@@ -30,26 +29,21 @@ class ShadowsEffect:
         # Check for errors
         self.frame_buffer.check_complete()
 
-    def start(self, program):
-        glDisable(GL_CULL_FACE)
-        
-        program.use()
-        print(self.light_space_matrix)
-        program.setMat4('lightSpaceMatrix', self.light_space_matrix)
-        glViewport(0, 0, self.width, self.height)
+    def start(self, program):  
         self.frame_buffer.bind()
+        glViewport(0, 0, CONFIG["shadow_width"], CONFIG["shadow_height"])
         glClear(GL_DEPTH_BUFFER_BIT)
+        program.use()
+        program.setMat4('lightSpaceMatrix', self.light_space_matrix)
         
     def end(self, program):
         self.frame_buffer.unbind()
+        glViewport(0, 0, CONFIG["window_width"], CONFIG["window_height"])
+        glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT)
+        
         program.use()
-        program.setMat4('lightSpaceMatrix', self.light_space_matrix)
-        program.setInt('shadowMap', 10)
         glActiveTexture(GL_TEXTURE10)
         self.depth_buffer.bind()
         
-        glEnable(GL_CULL_FACE)
-
-    def __del__(self):
-        del self.frame_buffer
-        del self.depth_buffer
+        program.setMat4('lightSpaceMatrix', self.light_space_matrix)
+        program.setInt('shadowMap', 10)

@@ -16,6 +16,7 @@ from OpenGL.GL import (
 
 class ShaderProgram:
     def __init__(self, vertPath, fragPath):
+        self.vpath = vertPath
         self.id = 0
         self.vertSource = self.loadSource(vertPath)
         self.fragSource = self.loadSource(fragPath)
